@@ -1,0 +1,1036 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de Evaluaciones - PRO</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        /* =========================================
+           ESTILOS ORIGINALES (INTACTOS)
+           ========================================= */
+        :root {
+            --primary: #2c3e50;
+            --bg: #f4f6f8;
+            --text: #333;
+            --rojo: #e74c3c;
+            --azul: #2980b9;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        header {
+            background: var(--primary);
+            color: white;
+            padding: 10px 20px;
+            display: grid;
+            grid-template-columns: 250px 1fr 250px;
+            align-items: center;
+            gap: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            height: 90px;
+            flex-shrink: 0;
+        }
+
+        .profile-section { display: flex; align-items: center; gap: 15px; }
+        .profile-pic { width: 65px; height: 65px; border-radius: 50%; background: rgba(255,255,255,0.2); border: 2px solid rgba(255,255,255,0.5); overflow: hidden; cursor: pointer; display: flex; justify-content: center; align-items: center; }
+        .profile-pic img { width: 100%; height: 100%; object-fit: cover; }
+        .profile-text { display: flex; flex-direction: column; }
+        .input-profile { background: transparent; border: none; border-bottom: 1px solid rgba(255,255,255,0.3); color: white; padding: 2px; font-size: 0.9rem; width: 150px; }
+        .input-role { font-size: 0.8rem; opacity: 0.9; margin-top: 4px; }
+
+        .title-section { text-align: center; }
+        .app-title { font-size: 1.5rem; font-weight: bold; margin: 0; }
+        .year-display { font-size: 1rem; opacity: 0.8; }
+
+        .logo-section { display: flex; justify-content: flex-end; align-items: center; }
+        .school-logo { width: 70px; height: 70px; background: white; border-radius: 8px; cursor: pointer; overflow: hidden; display: flex; justify-content: center; align-items: center; border: 2px solid rgba(255,255,255,0.5); }
+        .school-logo img { width: 90%; height: 90%; object-fit: contain; }
+
+        .nav-bar { background: white; padding: 5px 20px; border-bottom: 1px solid #ddd; display: flex; justify-content: center; gap: 10px; flex-shrink: 0; }
+        .sem-btn { padding: 5px 20px; border: 2px solid var(--primary); background: transparent; border-radius: 15px; color: var(--primary); cursor: pointer; font-weight: bold; }
+        .sem-btn.active { background: var(--primary); color: white; }
+
+        .courses-bar { background: #e9ecef; padding: 8px 20px 0; display: flex; gap: 5px; overflow-x: auto; flex-shrink: 0; }
+        .course-tab { padding: 8px 20px; background: #cbd5e0; border-radius: 8px 8px 0 0; cursor: grab; user-select: none; font-weight: 500; color: #555; display: flex; align-items: center; gap: 5px; white-space: nowrap; font-size: 0.9rem; }
+        .course-tab.active { background: white; color: var(--primary); border-top: 4px solid var(--primary); font-weight: bold; }
+
+        main { flex: 1; display: flex; flex-direction: column; padding: 15px; background: white; overflow: hidden; }
+        .toolbar { display: flex; flex-wrap: wrap; gap: 10px; background: #f8f9fa; padding: 10px; border-radius: 8px; border: 1px solid #ddd; align-items: center; margin-bottom: 10px; flex-shrink: 0; }
+        .tool-section { border-right: 1px solid #ccc; padding-right: 10px; display: flex; gap: 5px; align-items: center;}
+        
+        #tableContainer { flex: 1; overflow-y: auto; border: 1px solid #eee; position: relative; }
+        table { width: 100%; border-collapse: separate; border-spacing: 0; min-width: 800px; }
+        
+        th { background: var(--primary); color: white; padding: 5px; position: sticky; top: 0; z-index: 10; border: 1px solid rgba(255,255,255,0.2); vertical-align: top;}
+        td { border: 1px solid #eee; padding: 2px; text-align: center; background: white; }
+
+        .th-avg { background: #2c3e50; border-left: 3px solid white; z-index: 20; }
+        .td-avg { border-left: 2px solid #ddd; background: #f9f9f9; font-weight: bold; font-size: 1.1rem; }
+
+        .name-input { width: 95%; padding: 5px; border: none; background: transparent; text-align: left; }
+        .name-input:focus { background: #f0f8ff; outline: none; }
+        
+        .score-input { width: 45px; font-size: 1rem; padding: 4px; text-align: center; border: 1px solid #ddd; border-radius: 4px; font-weight: 500; }
+        .score-input:focus { border-color: var(--primary); outline: none; background: #f0f8ff; }
+        
+        .eval-name-input { background: rgba(255,255,255,0.1); border: none; border-bottom: 1px solid rgba(255,255,255,0.3); color: white; text-align: center; width: 90%; font-weight: bold; margin-bottom: 4px; font-size: 0.9rem;}
+        
+        .header-inputs-row { display: flex; justify-content: center; gap: 5px; align-items: center; font-size: 0.8rem;}
+        .mini-input { width: 35px; text-align: center; border: none; border-radius: 3px; font-weight: bold; padding: 2px; }
+
+        .grade-badge { font-weight: bold; margin-left: 2px; font-size: 1rem; width: 35px; display: inline-block; }
+        .rojo { color: var(--rojo); }
+        .azul { color: #2980b9; }
+
+        input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+        input[type=number] { -moz-appearance: textfield; }
+
+        .btn-act { border: none; padding: 8px 12px; border-radius: 4px; color: white; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 5px; font-size: 0.85rem; }
+        .btn-blue { background: #3498db; }
+        .btn-red { background: #e74c3c; }
+        .btn-green { background: #27ae60; }
+        .btn-orange { background: #e67e22; }
+        .btn-danger { background: #c0392b; }
+
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center; }
+        .modal-content { background: white; padding: 20px; width: 450px; border-radius: 8px; max-height: 90vh; display: flex; flex-direction: column; }
+        .report-options { display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px; padding: 10px; background: #f1f1f1; border-radius: 5px; }
+        .radio-group { display: flex; gap: 15px; margin-bottom: 5px; }
+        .select-eval { padding: 8px; border-radius: 4px; border: 1px solid #ccc; width: 100%; display: none; }
+        .report-list { margin: 10px 0; padding: 10px; background: #fff; border: 1px solid #ddd; max-height: 250px; overflow-y: auto; font-family: monospace; font-size: 0.9rem; white-space: pre-line; }
+        .share-buttons { display: flex; gap: 10px; margin-top: 10px; }
+        .btn-share { flex: 1; padding: 10px; border: none; border-radius: 5px; color: white; font-weight: bold; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 5px; }
+        .wa { background: #25D366; }
+        .mail { background: #EA4335; }
+
+        @media print {
+            .toolbar, .nav-bar, .courses-bar, .header-controls { display: none !important; }
+            main { overflow: visible; padding: 0; }
+            #tableContainer { overflow: visible; }
+            th { position: static; color: black !important; border: 1px solid #000; background: transparent !important; } 
+            input { color: black !important; }
+            table, td { border: 1px solid #000; }
+        }
+
+        .dragging { opacity: 0.5; }
+
+        /* =========================================
+           NUEVOS ESTILOS PARA SYNC AUTOMÁTICO
+           ========================================= */
+        
+        /* Modal de Login (Solo primera vez) */
+        #loginOverlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(44, 62, 80, 0.98); z-index: 99999;
+            display: flex; justify-content: center; align-items: center;
+        }
+        .login-box {
+            background: white; padding: 40px; border-radius: 12px; width: 90%; max-width: 450px;
+            text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        }
+        .login-input {
+            width: 100%; padding: 15px; margin: 20px 0; border: 2px solid #ddd;
+            border-radius: 8px; font-size: 1.1rem; box-sizing: border-box; font-family: monospace;
+        }
+        
+        /* Indicador de Estado (Puntito abajo derecha) */
+        .sync-indicator {
+            position: fixed; bottom: 15px; right: 15px;
+            background: white; padding: 8px 15px; border-radius: 30px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15); font-size: 0.85rem; font-weight: bold;
+            display: flex; align-items: center; gap: 8px; z-index: 5000;
+            border: 1px solid #eee; transition: all 0.3s ease;
+        }
+        .status-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+        .dot-green { background: #2ecc71; box-shadow: 0 0 8px #2ecc71; }
+        .dot-yellow { background: #f1c40f; animation: pulse 1s infinite; }
+        .dot-red { background: #e74c3c; }
+        
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
+
+    </style>
+</head>
+<body>
+
+    <div id="loginOverlay">
+        <div class="login-box">
+            <i class="fas fa-cloud" style="font-size: 4rem; color: #2c3e50; margin-bottom: 20px;"></i>
+            <h2 style="color:#2c3e50; margin:0;">Conectar Aplicación</h2>
+            <p style="color:#666; font-size: 0.95rem; margin-top: 10px;">
+                Ingresa tu <strong>Token de GitHub</strong> para sincronizar tus cursos, notas y fotos en todos tus dispositivos automáticamente.
+            </p>
+            <input type="password" id="tokenInput" class="login-input" placeholder="ghp_tu_token_aqui...">
+            <button onclick="iniciarSesion()" class="btn-act btn-green" style="width:100%; padding:15px; font-size:1.1rem; justify-content: center;">
+                <i class="fas fa-plug"></i> Conectar y Sincronizar
+            </button>
+            <p style="font-size:0.8rem; color:#999; margin-top:20px;">
+                Esto solo se pide una vez por dispositivo.
+            </p>
+        </div>
+    </div>
+
+    <input type="file" id="fileProfile" accept="image/*" style="display:none">
+    <input type="file" id="fileLogo" accept="image/*" style="display:none">
+
+    <header>
+        <div class="profile-section">
+            <div class="profile-pic" title="Subir foto">
+                <i class="fas fa-camera" id="iconProfile"></i>
+                <img id="imgProfile" style="display:none">
+            </div>
+            <div class="profile-text">
+                <input type="text" class="input-profile" id="profName" value="" placeholder="Tu Nombre...">
+                <input type="text" class="input-profile input-role" id="profRole" value="" placeholder="Cargo...">
+            </div>
+        </div>
+        <div class="title-section">
+            <div class="app-title" id="displayTitle">Registro de Evaluaciones</div>
+            <div class="year-display">Año Escolar <span id="displayYear">2026</span></div>
+        </div>
+        <div class="logo-section">
+            <div class="school-logo" title="Subir Logo">
+                <i class="fas fa-university" id="iconLogo"></i>
+                <img id="imgLogo" style="display:none">
+            </div>
+        </div>
+    </header>
+
+    <div class="nav-bar">
+        <button class="sem-btn active" id="btnSem1">1er Semestre</button>
+        <button class="sem-btn" id="btnSem2">2do Semestre</button>
+        <div style="margin-left:auto; display:flex; align-items:center; gap:10px;">
+            <button onclick="openConfig()" style="cursor:pointer; background:none; border:none; color:#555">
+                <i class="fas fa-cog"></i> Config
+            </button>
+            <button onclick="cerrarSesion()" style="cursor:pointer; background:none; border:none; color:#e74c3c" title="Desconectar">
+                <i class="fas fa-sign-out-alt"></i>
+            </button>
+        </div>
+    </div>
+
+    <div class="courses-bar" id="tabsContainer"></div>
+
+    <main>
+        <div class="toolbar">
+            <button class="btn-act btn-danger" id="reportBtn" title="Generar Reporte">
+                <i class="fas fa-bell"></i> Reporte Riesgo
+            </button>
+            <div class="tool-section" style="margin-left:10px">
+                <div><small>Min</small><br><input type="number" id="cMin" style="width:35px"></div>
+                <div><small>Apr</small><br><input type="number" id="cPass" style="width:35px"></div>
+                <div><small>Max</small><br><input type="number" id="cMax" style="width:35px"></div>
+                <div><small>Ex%</small><br><input type="number" id="cEx" style="width:35px"></div>
+                <div><small>Color</small><br><input type="color" id="cColor" style="width:30px; padding:0;"></div>
+            </div>
+            <div class="tool-section">
+                <button class="btn-act btn-blue" id="addStudentBtn"><i class="fas fa-user-plus"></i></button>
+                <button class="btn-act btn-red" id="removeStudentBtn"><i class="fas fa-user-minus"></i></button>
+                <button class="btn-act btn-green" id="addEvalBtn"><i class="fas fa-plus-circle"></i> Eval</button>
+                <button class="btn-act btn-orange" id="removeEvalBtn"><i class="fas fa-minus-circle"></i></button>
+            </div>
+            <div style="margin-left:auto; display:flex; gap:5px;">
+                <button id="addCourseBtn" style="cursor:pointer; font-size:0.8rem">+ Curso</button>
+                <button id="deleteCourseBtn" style="cursor:pointer; color:red; font-size:0.8rem">Eliminar</button>
+            </div>
+        </div>
+        <div id="tableContainer"></div>
+    </main>
+
+    <div id="reportModal" class="modal">
+        <div class="modal-content">
+            <h3 style="margin-top:0; color:var(--primary)">Generar Reporte</h3>
+            <div class="report-options">
+                <div class="radio-group">
+                    <label style="cursor:pointer; display:flex; align-items:center; gap:5px;">
+                        <input type="radio" name="rptType" value="eval" checked> Por Evaluación
+                    </label>
+                    <label style="cursor:pointer; display:flex; align-items:center; gap:5px;">
+                        <input type="radio" name="rptType" value="avg"> Promedio Semestral
+                    </label>
+                </div>
+                <select id="rptEvalSelect" class="select-eval"></select>
+                <button id="generateReportBtn" class="btn-act btn-blue" style="width:100%; justify-content:center;">
+                    Generar Lista
+                </button>
+            </div>
+            <div id="reportOutput" class="report-list"></div>
+            <div class="share-buttons">
+                <button class="btn-share wa" id="whatsappShareBtn">
+                    <i class="fab fa-whatsapp"></i> WhatsApp
+                </button>
+                <button class="btn-share mail" id="mailShareBtn">
+                    <i class="fas fa-envelope"></i> Correo
+                </button>
+            </div>
+            <button id="closeReportBtn" style="margin-top:10px; width:100%; padding:8px; cursor:pointer;">
+                Cerrar
+            </button>
+        </div>
+    </div>
+
+    <div id="configModal" class="modal">
+        <div class="modal-content">
+            <h3>Configuración</h3>
+            <label>Título:</label><input type="text" id="confTitle" style="width:100%; margin-bottom:10px;">
+            <label>Año:</label><input type="number" id="confYear" style="width:100%; margin-bottom:10px;">
+            <label>Color:</label><input type="color" id="confColor" style="width:100%; height:40px; margin-bottom:20px;">
+            <button id="saveConfigBtn" class="btn-act btn-blue" style="width:100%">Guardar</button>
+            <button id="cancelConfigBtn" style="width:100%; margin-top:5px; padding:8px;">Cancelar</button>
+            <hr>
+            <button id="hardResetBtn" style="color:red; background:none; border:none; width:100%; cursor:pointer;">
+                Borrar datos Locales
+            </button>
+        </div>
+    </div>
+
+    <div id="syncStatus" class="sync-indicator">
+        <span class="status-dot dot-red"></span>
+        <span id="syncText">Sin Conexión</span>
+    </div>
+
+    <script>
+        // ============================================
+        // 1. CONFIGURACIÓN Y ESTADO INICIAL
+        // ============================================
+        
+        // Estructura de datos ORIGINAL (para no romper tu UI)
+        const DEFAULT = { 
+            meta: { lastUpdate: 0 }, // Añadido para sync
+            global: { 
+                title: "Registro de Evaluaciones", 
+                year: new Date().getFullYear(),
+                color: "#2c3e50", 
+                profName: "", 
+                profRole: "", 
+                imgProf: null, 
+                imgLogo: null 
+            }, 
+            semester: 1, 
+            activeCourseIdx: 0, 
+            courses: [{ 
+                id: 'c' + Date.now(), 
+                name: "1° Medio A", 
+                color: "#2c3e50", 
+                params: { min: 1.0, pass: 4.0, max: 7.0, ex: 60 }, 
+                students: [{id: 's' + Date.now(), name: ''}], 
+                sem1: { evals: [{name: "Eval 1", max: 45, weight: 20}], scores: {} }, 
+                sem2: { evals: [{name: "Eval 1", max: 45, weight: 20}], scores: {} } 
+            }] 
+        };
+
+        let app = JSON.parse(JSON.stringify(DEFAULT));
+        let currentReportText = "";
+        let dragSrc = null;
+        
+        // Variables del SISTEMA DE SYNC
+        let GITHUB_TOKEN = localStorage.getItem('gh_token_v2'); // Token guardado
+        let GIST_ID = localStorage.getItem('gh_gist_id_v2');   // ID del archivo en nube
+        let saveTimeout; // Para el auto-guardado
+        
+        // ============================================
+        // 2. SISTEMA DE SINCRONIZACIÓN AUTOMÁTICA
+        // ============================================
+
+        // Función de entrada (Start)
+        async function arrancarAplicacion() {
+            if(GITHUB_TOKEN && GITHUB_TOKEN.length > 10) {
+                // Si ya tenemos token, ocultamos login y buscamos datos
+                document.getElementById('loginOverlay').style.display = 'none';
+                updateSyncStatus('syncing', 'Buscando datos...');
+                
+                // Cargar local primero para mostrar algo rápido
+                loadLocalData();
+                render(); 
+                loadGlobalUI();
+
+                // Luego intentar descargar nube
+                await buscarYSincronizarNube();
+            } else {
+                // Si no hay token, mostramos login
+                document.getElementById('loginOverlay').style.display = 'flex';
+            }
+        }
+
+        // Login del usuario
+        async function iniciarSesion() {
+            const token = document.getElementById('tokenInput').value.trim();
+            if(token.length < 20) return alert("El token parece muy corto/inválido.");
+            
+            GITHUB_TOKEN = token;
+            localStorage.setItem('gh_token_v2', token);
+            document.getElementById('loginOverlay').style.display = 'none';
+            
+            updateSyncStatus('syncing', 'Conectando cuenta...');
+            await buscarYSincronizarNube();
+        }
+
+        function cerrarSesion() {
+            if(confirm("¿Desconectar este dispositivo? Deberás ingresar el token nuevamente.")) {
+                localStorage.removeItem('gh_token_v2');
+                localStorage.removeItem('gh_gist_id_v2');
+                location.reload();
+            }
+        }
+
+        // Lógica Core de Sync
+        async function buscarYSincronizarNube() {
+            if(!navigator.onLine) {
+                updateSyncStatus('offline', 'Modo Offline');
+                return;
+            }
+
+            try {
+                const headers = { 'Authorization': `token ${GITHUB_TOKEN}` };
+
+                // A. Si no tenemos el ID del Gist, lo buscamos en GitHub
+                if (!GIST_ID) {
+                    updateSyncStatus('syncing', 'Buscando archivo...');
+                    const res = await fetch('https://api.github.com/gists', { headers });
+                    if(!res.ok) throw new Error("Token inválido o error de red");
+                    
+                    const gists = await res.json();
+                    const miGist = gists.find(g => g.files['registro_escolar_db.json']);
+
+                    if (miGist) {
+                        GIST_ID = miGist.id;
+                        localStorage.setItem('gh_gist_id_v2', GIST_ID);
+                    } else {
+                        // Si no existe, lo creamos
+                        await crearGistNuevo();
+                        return; 
+                    }
+                }
+
+                // B. Descargar datos del Gist
+                updateSyncStatus('syncing', 'Descargando...');
+                const resGist = await fetch(`https://api.github.com/gists/${GIST_ID}`, { headers });
+                const dataGist = await resGist.json();
+                const content = dataGist.files['registro_escolar_db.json'].content;
+                const nubeApp = JSON.parse(content);
+
+                // C. Comparar versiones (Local vs Nube)
+                const localTs = app.meta?.lastUpdate || 0;
+                const nubeTs = nubeApp.meta?.lastUpdate || 0;
+
+                if (nubeTs > localTs) {
+                    // La nube es más reciente: Sobrescribimos local
+                    console.log("Nube más reciente. Actualizando...");
+                    app = nubeApp;
+                    saveLocal(false); // Guardar sin disparar subida
+                    render();
+                    loadGlobalUI();
+                    updateSyncStatus('online', 'Actualizado desde Nube');
+                } else if (localTs > nubeTs) {
+                    // Local es más reciente: Subimos a la nube
+                    console.log("Local más reciente. Subiendo...");
+                    guardarEnNube();
+                } else {
+                    updateSyncStatus('online', 'Sincronizado');
+                }
+
+            } catch (error) {
+                console.error(error);
+                updateSyncStatus('offline', 'Error de Sync (Usando Local)');
+            }
+        }
+
+        async function crearGistNuevo() {
+            updateSyncStatus('syncing', 'Creando base de datos...');
+            app.meta = { lastUpdate: Date.now() };
+            
+            const payload = {
+                description: "Base de Datos App Escolar (No borrar)",
+                public: false,
+                files: { "registro_escolar_db.json": { content: JSON.stringify(app) } }
+            };
+
+            const res = await fetch('https://api.github.com/gists', {
+                method: 'POST',
+                headers: { 'Authorization': `token ${GITHUB_TOKEN}` },
+                body: JSON.stringify(payload)
+            });
+            const json = await res.json();
+            GIST_ID = json.id;
+            localStorage.setItem('gh_gist_id_v2', GIST_ID);
+            updateSyncStatus('online', 'Nube Iniciada');
+        }
+
+        // Función Maestra de Guardado (Reemplaza a la antigua save)
+        function save() {
+            // 1. Guardar localmente siempre e instantáneamente
+            app.meta = app.meta || {};
+            app.meta.lastUpdate = Date.now();
+            saveLocal(false);
+
+            // 2. Debounce para subir a la nube (espera 2 segs que dejes de escribir)
+            updateSyncStatus('syncing', 'Guardando cambios...');
+            clearTimeout(saveTimeout);
+            
+            saveTimeout = setTimeout(() => {
+                if(navigator.onLine && GIST_ID) {
+                    guardarEnNube();
+                } else if (!navigator.onLine) {
+                    updateSyncStatus('offline', 'Pendiente de subir');
+                }
+            }, 2000);
+        }
+
+        async function guardarEnNube() {
+            try {
+                const payload = {
+                    files: { "registro_escolar_db.json": { content: JSON.stringify(app) } }
+                };
+                await fetch(`https://api.github.com/gists/${GIST_ID}`, {
+                    method: 'PATCH',
+                    headers: { 'Authorization': `token ${GITHUB_TOKEN}` },
+                    body: JSON.stringify(payload)
+                });
+                updateSyncStatus('online', 'Guardado en Nube');
+            } catch (e) {
+                updateSyncStatus('offline', 'Error al subir');
+            }
+        }
+
+        function saveLocal(triggerTime = true) {
+            if(triggerTime) app.meta.lastUpdate = Date.now();
+            localStorage.setItem('gradebook_v2_auto', JSON.stringify(app));
+        }
+
+        function loadLocalData() {
+            const data = localStorage.getItem('gradebook_v2_auto');
+            if(data) {
+                try { app = JSON.parse(data); } catch(e) { console.log("Error data local"); }
+            }
+        }
+
+        function updateSyncStatus(state, text) {
+            const dot = document.querySelector('.status-dot');
+            const txt = document.getElementById('syncText');
+            txt.innerText = text;
+            dot.className = 'status-dot'; // reset
+            
+            if(state === 'online') dot.classList.add('dot-green');
+            if(state === 'syncing') dot.classList.add('dot-yellow');
+            if(state === 'offline') dot.classList.add('dot-red');
+        }
+
+        // ============================================
+        // 3. LÓGICA DE NEGOCIO ORIGINAL (UI & CÁLCULOS)
+        // ============================================
+
+        function getActiveCourse() { 
+            if(app.courses.length === 0) return null; 
+            if(app.activeCourseIdx >= app.courses.length) app.activeCourseIdx = 0; 
+            return app.courses[app.activeCourseIdx]; 
+        }
+
+        function calculateGrade(score, total, params) { 
+            if(score === "" || score === null || isNaN(parseFloat(score))) return null;
+            score = parseFloat(score); 
+            total = parseFloat(total); 
+            if(total <= 0) return null;
+            
+            const exigence = params.ex / 100;
+            const cut = total * exigence;
+            
+            let grade;
+            if(score < cut) {
+                grade = params.min + ((params.pass - params.min) * score) / cut;
+            } else {
+                grade = params.pass + ((params.max - params.pass) * (score - cut)) / (total - cut);
+            }
+            return Math.round(grade * 10) / 10;
+        }
+
+        function calculateWeightedAvg(studentId, semData, params) {
+            let totalWeighted = 0;
+            let totalWeights = 0;
+            let hasGrades = false;
+
+            semData.evals.forEach((ev, i) => {
+                const scores = semData.scores[studentId] || [];
+                const val = scores[i];
+                if(val !== undefined && val !== "" && val !== null) {
+                    const grade = calculateGrade(val, ev.max, params);
+                    const weight = parseFloat(ev.weight) || 0;
+                    if(grade !== null) {
+                        totalWeighted += grade * weight;
+                        totalWeights += weight;
+                        hasGrades = true;
+                    }
+                }
+            });
+
+            if (!hasGrades) return null;
+            if (totalWeights === 0) return 0;
+            
+            return Math.round((totalWeighted / totalWeights) * 10) / 10;
+        }
+
+        function handleScoreInput(sid, idx, el) {
+            const value = el.value;
+            const c = getActiveCourse();
+            const d = app.semester === 1 ? c.sem1 : c.sem2;
+            
+            if(!d.scores[sid]) d.scores[sid] = [];
+            d.scores[sid][idx] = value; 
+            
+            // UI Update Immediate
+            const grade = calculateGrade(value, d.evals[idx].max, c.params);
+            const badge = document.getElementById(`badge-${sid}-${idx}`);
+            if(badge) { 
+                badge.innerText = grade !== null ? grade.toFixed(1) : ""; 
+                badge.className = `grade-badge ${grade !== null && grade < c.params.pass ? 'rojo' : 'azul'}`; 
+            }
+            updateFinalAvg(sid);
+            
+            save(); // Trigger sync
+        }
+
+        function updateFinalAvg(sid) {
+            const c = getActiveCourse();
+            const d = app.semester === 1 ? c.sem1 : c.sem2;
+            const avg = calculateWeightedAvg(sid, d, c.params);
+            const cell = document.getElementById(`avg-${sid}`);
+            
+            if(cell) {
+                cell.innerText = avg !== null ? avg.toFixed(1) : "";
+                cell.style.color = (avg !== null && avg < c.params.pass) ? "var(--rojo)" : "var(--azul)";
+            }
+        }
+
+        function handleEvalNameChange(i, v) { 
+            const c = getActiveCourse(); 
+            (app.semester === 1 ? c.sem1 : c.sem2).evals[i].name = v; 
+            save(); 
+        }
+
+        function handleEvalMaxChange(i, v) { 
+            const c = getActiveCourse(); 
+            (app.semester === 1 ? c.sem1 : c.sem2).evals[i].max = v; 
+            save(); 
+            render(); 
+        }
+
+        function handleEvalWeightChange(i, v) { 
+            const c = getActiveCourse(); 
+            (app.semester === 1 ? c.sem1 : c.sem2).evals[i].weight = v; 
+            save(); 
+            render();
+        }
+
+        // --- ACCIONES ---
+        function addCourse() { 
+            const name = prompt("Nombre del curso:");
+            if(!name) return;
+            
+            app.courses.push({
+                id: 'c' + Date.now(),
+                name: name,
+                color: app.global.color,
+                params: { min: 1.0, pass: 4.0, max: 7.0, ex: 60 },
+                students: [{id: 's' + Date.now(), name: ''}],
+                sem1: { evals: [{name: "Eval 1", max: 45, weight: 20}], scores: {} },
+                sem2: { evals: [{name: "Eval 1", max: 45, weight: 20}], scores: {} }
+            });
+            
+            app.activeCourseIdx = app.courses.length - 1; 
+            save(); 
+            render(); 
+        }
+
+        function deleteCourse() { 
+            if(!confirm("¿Borrar curso?")) return;
+            app.courses.splice(app.activeCourseIdx, 1);
+            app.activeCourseIdx = 0; 
+            save(); 
+            render(); 
+        }
+
+        function addStudent() { 
+            const c = getActiveCourse(); 
+            if(!c) return;
+            c.students.push({id: 's' + Date.now(), name: ''}); 
+            save(); 
+            render(); 
+        }
+
+        function removeStudent() { 
+            const c = getActiveCourse(); 
+            if(!c || c.students.length === 0) return;
+            if(confirm("¿Eliminar último estudiante?")) { 
+                c.students.pop(); 
+                save(); 
+                render(); 
+            } 
+        }
+
+        function addEval() { 
+            const c = getActiveCourse(); 
+            if(!c) return;
+            (app.semester === 1 ? c.sem1 : c.sem2).evals.push({name: `Eval ${c.sem1.evals.length + 1}`, max: 45, weight: 10}); 
+            save(); 
+            render(); 
+        }
+
+        function removeEval() { 
+            const c = getActiveCourse();
+            const d = app.semester === 1 ? c.sem1 : c.sem2;
+            if(!c) return;
+            if(d.evals.length > 0 && confirm("¿Borrar última evaluación?")) { 
+                d.evals.pop(); 
+                save(); 
+                render(); 
+            } 
+        }
+
+        function updateCourseParams() { 
+            const c = getActiveCourse(); 
+            c.params.min = parseFloat(document.getElementById('cMin').value);
+            c.params.pass = parseFloat(document.getElementById('cPass').value);
+            c.params.max = parseFloat(document.getElementById('cMax').value);
+            c.params.ex = parseFloat(document.getElementById('cEx').value);
+            save(); 
+            render(); 
+        }
+
+        function updateCourseColor(v) { 
+            getActiveCourse().color = v; 
+            save(); 
+            render(); 
+        }
+
+        // --- DRAG & DROP ---
+        function handleDragStart(e) { 
+            this.classList.add('dragging');
+            dragSrc = this;
+            e.dataTransfer.setData('idx', this.getAttribute('data-idx'));
+        }
+
+        function handleDrop(e) { 
+            e.stopPropagation(); 
+            const fromIdx = parseInt(e.dataTransfer.getData('idx'));
+            const toIdx = parseInt(this.getAttribute('data-idx'));
+            
+            if(fromIdx !== toIdx) { 
+                const moved = app.courses.splice(fromIdx, 1)[0];
+                app.courses.splice(toIdx, 0, moved);
+                app.activeCourseIdx = toIdx;
+                save(); 
+                render(); 
+            } 
+            return false;
+        }
+
+        // --- UTILITIES ---
+        function uploadImage(type, input) { 
+            const file = input.files[0]; 
+            if(!file || file.size > 800000) return alert("Error: imagen demasiado grande (max 800kb)");
+            
+            const reader = new FileReader();
+            reader.onload = e => {
+                if(type === 'profile') app.global.imgProf = e.target.result;
+                if(type === 'logo') app.global.imgLogo = e.target.result;
+                save(); 
+                loadGlobalUI();
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function updateGlobal(key, value) { 
+            app.global[key] = value; 
+            save(); 
+        }
+
+        function loadGlobalUI() { 
+            document.getElementById('displayTitle').innerText = app.global.title;
+            document.getElementById('displayYear').innerText = app.global.year;
+            document.documentElement.style.setProperty('--primary', app.global.color);
+            document.getElementById('profName').value = app.global.profName;
+            document.getElementById('profRole').value = app.global.profRole;
+            
+            if(app.global.imgProf) {
+                document.getElementById('imgProfile').src = app.global.imgProf;
+                document.getElementById('imgProfile').style.display = 'block';
+                document.getElementById('iconProfile').style.display = 'none';
+            }
+            if(app.global.imgLogo) {
+                document.getElementById('imgLogo').src = app.global.imgLogo;
+                document.getElementById('imgLogo').style.display = 'block';
+                document.getElementById('iconLogo').style.display = 'none';
+            }
+        }
+
+        function shareWhatsapp() { 
+            if(!currentReportText) return alert("Genera una lista primero");
+            window.open(`https://wa.me/?text=${encodeURIComponent(currentReportText)}`, '_blank');
+        }
+
+        function shareMail() { 
+            if(!currentReportText) return alert("Genera una lista primero");
+            window.open(`mailto:?subject=Informe Calificaciones&body=${encodeURIComponent(currentReportText)}`);
+        }
+
+        function setSemester(s) { 
+            app.semester = s; 
+            save(); 
+            render(); 
+        }
+
+        function openConfig() { 
+            document.getElementById('confTitle').value = app.global.title;
+            document.getElementById('confYear').value = app.global.year;
+            document.getElementById('confColor').value = app.global.color;
+            document.getElementById('configModal').style.display = 'flex';
+        }
+
+        function saveGlobalConfig() { 
+            app.global.title = document.getElementById('confTitle').value;
+            app.global.year = document.getElementById('confYear').value;
+            app.global.color = document.getElementById('confColor').value;
+            save(); 
+            loadGlobalUI();
+            document.getElementById('configModal').style.display = 'none';
+        }
+
+        function hardReset() { 
+            if(confirm("¿Borrar solo datos locales? Si tienes sync activado, volverán a bajar.")) { 
+                localStorage.removeItem('gradebook_v2_auto'); 
+                location.reload(); 
+            } 
+        }
+
+        // --- REPORT FUNCTIONS ---
+        function openReportModal() {
+            const c = getActiveCourse(); 
+            if(!c) return;
+            const select = document.getElementById('rptEvalSelect'); 
+            select.innerHTML = "";
+            const semData = app.semester === 1 ? c.sem1 : c.sem2;
+            
+            semData.evals.forEach((ev, i) => { 
+                const opt = document.createElement('option'); 
+                opt.value = i; 
+                opt.innerText = ev.name || `Eval ${i+1}`; 
+                select.appendChild(opt); 
+            });
+            toggleReportUI(); 
+            document.getElementById('reportOutput').innerHTML = ""; 
+            currentReportText = ""; 
+            document.getElementById('reportModal').style.display = 'flex';
+        }
+
+        function toggleReportUI() { 
+            const type = document.querySelector('input[name="rptType"]:checked').value; 
+            document.getElementById('rptEvalSelect').style.display = type === 'eval' ? 'block' : 'none'; 
+        }
+
+        function generateReport() {
+            const c = getActiveCourse();
+            const semData = app.semester === 1 ? c.sem1 : c.sem2;
+            const type = document.querySelector('input[name="rptType"]:checked').value;
+            const passGrade = c.params.pass;
+            let list = "", header = "", count = 0;
+
+            if (type === 'eval') {
+                const idx = document.getElementById('rptEvalSelect').value;
+                const ename = semData.evals[idx].name || "Evaluación";
+                header = `Estimados apoderados, se informa que los siguientes estudiantes obtuvieron calificación insuficiente en "${ename}":`;
+                c.students.forEach(s => {
+                    const val = (semData.scores[s.id]||[])[idx];
+                    const g = calculateGrade(val, semData.evals[idx].max, c.params);
+                    if (g !== null && g < passGrade) { 
+                        list += `- ${s.name || "Sin Nombre"}: ${g.toFixed(1)}\n`; 
+                        count++; 
+                    }
+                });
+            } else {
+                header = `Estimados apoderados, se informa que los siguientes estudiantes presentan promedio semestral insuficiente:`;
+                c.students.forEach(s => {
+                    const avg = calculateWeightedAvg(s.id, semData, c.params);
+                    if(avg !== null && avg < passGrade) { 
+                        list += `- ${s.name || "Sin Nombre"}: ${avg.toFixed(1)}\n`; 
+                        count++; 
+                    }
+                });
+            }
+            const footer = `\nAtte. Profesor ${app.global.profName}`;
+            if (count === 0) {
+                currentReportText = ""; 
+                document.getElementById('reportOutput').innerHTML = "<span style='color:green'>No hay estudiantes en riesgo.</span>";
+            } else {
+                currentReportText = `${header}\n\n${list}${footer}`; 
+                document.getElementById('reportOutput').innerText = currentReportText;
+            }
+        }
+
+        // --- RENDER ---
+        function render() {
+            const c = getActiveCourse();
+            const tabs = document.getElementById('tabsContainer');
+            const table = document.getElementById('tableContainer');
+            
+            document.getElementById('btnSem1').className = app.semester === 1 ? 'sem-btn active' : 'sem-btn';
+            document.getElementById('btnSem2').className = app.semester === 2 ? 'sem-btn active' : 'sem-btn';
+            
+            tabs.innerHTML = '';
+            app.courses.forEach((course, i) => {
+                const tab = document.createElement('div');
+                tab.className = `course-tab ${i === app.activeCourseIdx ? 'active' : ''}`;
+                tab.draggable = true;
+                tab.setAttribute('data-idx', i);
+                tab.innerHTML = `<i class="fas fa-grip-vertical" style="opacity:0.3"></i> ${course.name}`;
+                if(i === app.activeCourseIdx) {
+                    tab.style.borderTopColor = course.color;
+                    tab.style.color = course.color;
+                }
+                tab.onclick = () => { app.activeCourseIdx = i; save(); render(); };
+                tab.addEventListener('dragstart', handleDragStart);
+                tab.addEventListener('dragover', e => e.preventDefault());
+                tab.addEventListener('drop', handleDrop);
+                tab.addEventListener('dragend', function() { this.classList.remove('dragging'); });
+                tabs.appendChild(tab);
+            });
+
+            if(!c) { table.innerHTML = "<p style='text-align:center; padding:20px'>Crea un curso.</p>"; return; }
+            
+            // Sync inputs toolbar
+            document.getElementById('cMin').value = c.params.min;
+            document.getElementById('cPass').value = c.params.pass;
+            document.getElementById('cMax').value = c.params.max;
+            document.getElementById('cEx').value = c.params.ex;
+            document.getElementById('cColor').value = c.color;
+
+            const semData = app.semester === 1 ? c.sem1 : c.sem2;
+            let html = `<table><thead><tr><th style="width:250px; background:${c.color}">Alumnos (${c.students.length})</th>`;
+            
+            semData.evals.forEach((ev, i) => {
+                html += `<th style="background:${c.color}">
+                    <input type="text" class="eval-name-input" value="${ev.name || 'Eval ' + (i + 1)}" placeholder="Nombre" data-eval-index="${i}" data-field="name">
+                    <div class="header-inputs-row">
+                        <label>Pts:</label><input type="number" class="mini-input" value="${ev.max}" data-eval-index="${i}" data-field="max">
+                        <label>%:</label><input type="number" class="mini-input" value="${ev.weight||0}" data-eval-index="${i}" data-field="weight">
+                    </div>
+                </th>`;
+            });
+            html += `<th class="th-avg" style="width:80px;">Promedio</th></tr></thead><tbody>`;
+            
+            c.students.forEach(student => {
+                html += `<tr><td style="text-align:left">
+                    <input type="text" value="${student.name}" class="name-input" placeholder="Nombre..." data-student-id="${student.id}">
+                </td>`;
+                const scores = semData.scores[student.id] || [];
+                semData.evals.forEach((ev, i) => {
+                    const value = scores[i] !== undefined ? scores[i] : "";
+                    const grade = calculateGrade(value, ev.max, c.params);
+                    const colorClass = grade ? (grade < c.params.pass ? 'rojo' : 'azul') : '';
+                    html += `<td>
+                        <input type="number" class="score-input" value="${value}" data-student-id="${student.id}" data-eval-index="${i}">
+                        <span id="badge-${student.id}-${i}" class="grade-badge ${colorClass}">${grade ? grade.toFixed(1) : ''}</span>
+                    </td>`;
+                });
+                const finalAvg = calculateWeightedAvg(student.id, semData, c.params);
+                const finalColor = (finalAvg !== null && finalAvg < c.params.pass) ? "var(--rojo)" : "var(--azul)";
+                html += `<td class="td-avg" style="color:${finalColor}" id="avg-${student.id}">${finalAvg !== null ? finalAvg.toFixed(1) : ''}</td></tr>`;
+            });
+            
+            html += "</tbody></table>";
+            table.innerHTML = html;
+            setupDynamicEventListeners();
+        }
+
+        // --- LISTENERS ---
+        function setupEventListeners() {
+            document.getElementById('fileProfile').addEventListener('change', (e) => uploadImage('profile', e.target));
+            document.getElementById('fileLogo').addEventListener('change', (e) => uploadImage('logo', e.target));
+            document.querySelector('.profile-pic').addEventListener('click', () => document.getElementById('fileProfile').click());
+            document.querySelector('.school-logo').addEventListener('click', () => document.getElementById('fileLogo').click());
+            document.getElementById('profName').addEventListener('change', (e) => updateGlobal('profName', e.target.value));
+            document.getElementById('profRole').addEventListener('change', (e) => updateGlobal('profRole', e.target.value));
+            document.getElementById('btnSem1').addEventListener('click', () => setSemester(1));
+            document.getElementById('btnSem2').addEventListener('click', () => setSemester(2));
+            document.getElementById('reportBtn').addEventListener('click', openReportModal);
+            document.getElementById('addStudentBtn').addEventListener('click', addStudent);
+            document.getElementById('removeStudentBtn').addEventListener('click', removeStudent);
+            document.getElementById('addEvalBtn').addEventListener('click', addEval);
+            document.getElementById('removeEvalBtn').addEventListener('click', removeEval);
+            document.getElementById('addCourseBtn').addEventListener('click', addCourse);
+            document.getElementById('deleteCourseBtn').addEventListener('click', deleteCourse);
+            document.getElementById('cMin').addEventListener('change', updateCourseParams);
+            document.getElementById('cPass').addEventListener('change', updateCourseParams);
+            document.getElementById('cMax').addEventListener('change', updateCourseParams);
+            document.getElementById('cEx').addEventListener('change', updateCourseParams);
+            document.getElementById('cColor').addEventListener('change', (e) => updateCourseColor(e.target.value));
+            
+            // Modales
+            document.querySelector('[onclick="openConfig()"]').addEventListener('click', openConfig);
+            document.getElementById('saveConfigBtn').addEventListener('click', saveGlobalConfig);
+            document.getElementById('cancelConfigBtn').addEventListener('click', () => document.getElementById('configModal').style.display = 'none');
+            document.getElementById('hardResetBtn').addEventListener('click', hardReset);
+            document.querySelectorAll('input[name="rptType"]').forEach(r => r.addEventListener('change', toggleReportUI));
+            document.getElementById('generateReportBtn').addEventListener('click', generateReport);
+            document.getElementById('whatsappShareBtn').addEventListener('click', shareWhatsapp);
+            document.getElementById('mailShareBtn').addEventListener('click', shareMail);
+            document.getElementById('closeReportBtn').addEventListener('click', () => document.getElementById('reportModal').style.display = 'none');
+
+            // Online/Offline detection
+            window.addEventListener('online', () => { 
+                updateSyncStatus('syncing', 'Reconectado...'); 
+                buscarYSincronizarNube(); 
+            });
+            window.addEventListener('offline', () => updateSyncStatus('offline', 'Offline'));
+            
+            // Visibility (cuando vuelves a la pestaña)
+            document.addEventListener("visibilitychange", () => {
+                if (document.visibilityState === 'visible' && navigator.onLine && GITHUB_TOKEN) {
+                    buscarYSincronizarNube();
+                }
+            });
+        }
+
+        function setupDynamicEventListeners() {
+            document.querySelectorAll('.name-input[data-student-id]').forEach(input => {
+                input.addEventListener('change', function() {
+                    const sid = this.getAttribute('data-student-id');
+                    const s = getActiveCourse().students.find(x => x.id === sid);
+                    if(s) { s.name = this.value; save(); }
+                });
+            });
+            document.querySelectorAll('.score-input[data-student-id]').forEach(input => {
+                input.addEventListener('input', function() {
+                    handleScoreInput(this.getAttribute('data-student-id'), parseInt(this.getAttribute('data-eval-index')), this);
+                });
+            });
+            document.querySelectorAll('.eval-name-input[data-eval-index]').forEach(input => {
+                input.addEventListener('change', function() {
+                    handleEvalNameChange(parseInt(this.getAttribute('data-eval-index')), this.value);
+                });
+            });
+            document.querySelectorAll('.mini-input[data-eval-index]').forEach(input => {
+                input.addEventListener('change', function() {
+                    const idx = parseInt(this.getAttribute('data-eval-index'));
+                    const f = this.getAttribute('data-field');
+                    if(f === 'max') handleEvalMaxChange(idx, this.value);
+                    if(f === 'weight') handleEvalWeightChange(idx, this.value);
+                });
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            setupEventListeners();
+            arrancarAplicacion();
+        });
+
+    </script>
+</body>
+</html>
